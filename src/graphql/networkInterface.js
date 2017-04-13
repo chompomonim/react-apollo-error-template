@@ -4,7 +4,7 @@ import { schema } from './schema';
 export const networkInterface = {
   query({ query, variables, operationName }) {
     return delay(500).then(() => {
-      return graphql(
+      const response = graphql(
         schema,
         print(query),
         null,
@@ -12,6 +12,7 @@ export const networkInterface = {
         variables,
         operationName,
       );
+      return response
     });
   },
 };

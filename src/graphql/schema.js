@@ -1,3 +1,4 @@
+import sample from 'lodash/sample';
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -14,18 +15,21 @@ const PersonType = new GraphQLObjectType({
   },
 });
 
-const peopleData = [
-  { id: 1, name: 'John Smith' },
-  { id: 2, name: 'Sara Smith' },
-  { id: 3, name: 'Budd Deey' },
-];
+function peopleData () {
+  return [
+    { id: 1, name: 'John Smith' },
+    { id: 2, name: 'Sara Smith' },
+    { id: 3, name: 'Budd Deey' },
+    { id: 4, name: sample(['Steve Balmer', 'Bill Gates'])}
+  ];
+}
 
 const QueryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
     people: {
       type: new GraphQLList(PersonType),
-      resolve: () => peopleData,
+      resolve: () => peopleData(),
     },
   },
 });

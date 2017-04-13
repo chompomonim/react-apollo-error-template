@@ -1,9 +1,50 @@
 import React, { Component } from 'react';
 import { gql, graphql } from 'react-apollo';
 
-class App extends Component {
+class PeopleComponent extends Component {
   render() {
-    const { data: { loading, people } } = this.props;
+    const {data: {loading, people}, attempt} = this.props
+
+    if (loading)
+      return <p>Loading…</p>
+
+    return (
+      <div>
+        Attempt: {attempt}
+        <ul>
+          {people.map(person => (
+            <li key={person.id}>
+              {person.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+}
+
+const People = graphql(
+  gql`{
+    people {
+      id
+      name
+    }
+  }`, {
+    options: {
+      fetchPolicy: 'network-only',
+      // pollInterval: 1000
+    }
+  }
+)(PeopleComponent)
+
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {attempt: 1}
+  }
+
+  render() {
+    const { attempt } = this.state
     return (
       <main>
         <header>
@@ -20,27 +61,13 @@ class App extends Component {
             Currently the schema just serves a list of people with names and ids.
           </p>
         </header>
-        {loading ? (
-          <p>Loading…</p>
-        ) : (
-          <ul>
-            {people.map(person => (
-              <li key={person.id}>
-                {person.name}
-              </li>
-            ))}
-          </ul>
-        )}
+
+        <People attempt={attempt} />
+
+        <button onClick={() => this.setState({attempt: attempt + 1})}>Reload</button>
       </main>
     );
   }
 }
 
-export default graphql(
-  gql`{
-    people {
-      id
-      name
-    }
-  }`,
-)(App)
+export default App
